@@ -22,6 +22,7 @@ import com.tshirt.pds.entities.LoginRequest;
 import com.tshirt.pds.entities.LoginResponse;
 import com.tshirt.pds.entities.Role;
 import com.tshirt.pds.entities.User;
+import com.tshirt.pds.repository.RoleRepository;
 import com.tshirt.pds.security.JwtUtil;
 import com.tshirt.pds.service.CustomUserDetailsService;
 import com.tshirt.pds.service.UsersService;
@@ -31,6 +32,9 @@ import com.tshirt.pds.service.UsersService;
 public class AuthController {
     @Autowired
     private JwtUtil jwtUtil;
+    
+    @Autowired
+    RoleRepository roleRepository;
     
     @Autowired
     UsersService usersService;
@@ -76,7 +80,8 @@ public class AuthController {
                 	
                    new UsernamePasswordAuthenticationToken(loginRequest.getLogin(), loginRequest.getPassword()));
             loginResponse.setTokenjwt(jwtUtil.generateToken(loginRequest.getLogin()));
-         Role role=new Role(100000000L,"Administrateur");
+        Role role=new Role(100000000L,"Administrateur");
+      
          List<Role> roles = new ArrayList<Role>();
          roles.add(role);
          loginResponse.setMesroles(roles);

@@ -51,4 +51,3 @@ public class JwtUtil {
         return createToken(claims, login);
     }
 }
-
