@@ -1,8 +1,10 @@
 package com.tshirt.pds.service;
 
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,25 +23,15 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByLogin(username);
         return new org.springframework.security.core.userdetails.User
-        		(user.getLogin(),user.getPassword(),new ArrayList<>() );
+        		(user.getLogin(),user.getPassword(),getAuthority(user) );
    
-     
-
-    
-    
-    
-//   
-//	    User user = userRepository.findByLogine(username)
-//	            .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
-//
-//	    return CustomUserDetailsService.build(user);
-//
-    	
-
-   
-    
-    
-    
+    }
+    private Set<SimpleGrantedAuthority> getAuthority(User user) {
+        Set<SimpleGrantedAuthority> authorities = new HashSet<>();
+        user.getRoles().forEach(role -> {
+            authorities.add(new SimpleGrantedAuthority(role.getName()));
+        });
+        return authorities;
     }
     
 }

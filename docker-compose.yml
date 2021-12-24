@@ -7,6 +7,8 @@ services:
       - MYSQL_DATABASE=tshirt
     ports:
       - 3306:3306
+    volumes:
+      - ./:/var/lib/mysql
   myapp-main:
     image: abdou80/back_v:02
     depends_on:
@@ -14,14 +16,12 @@ services:
     ports:
       - 8080:8080
     environment:
-      SPRING_APPLICATION_JSON: '{
-        "spring.servlet.multipart.max-file-size":"3000KB",
-        "spring.servlet.multipart.max-request-size":"3000KB",
-        "spring.datasource.url":"jdbc:mysql://myapp-mysql:3306/tshirt?serverTimezone=UTC",
-        "spring.datasource.username":"root",
-        "spring.datasource.password":"test",
-        "spring.jpa.hibernate.ddl-auto":"update",
-        "spring.jpa.properties.hibernate.dialect":"org.hibernate.dialect.MySQL57Dialect"
-         }'
+      - SPRING_DATASOURCE_PASSWORD=test
+      - SPRING_DATASOURCE_URL=jdbc:mysql://myapp-mysql:3306/tshirt?serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.MySQL8Dialect
+    
+     
   
 

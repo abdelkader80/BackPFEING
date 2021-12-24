@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +25,7 @@ import com.tshirt.pds.entities.LoginResponse;
 import com.tshirt.pds.entities.Role;
 import com.tshirt.pds.entities.User;
 import com.tshirt.pds.repository.RoleRepository;
+import com.tshirt.pds.repository.UserRepository;
 import com.tshirt.pds.security.JwtUtil;
 import com.tshirt.pds.service.CustomUserDetailsService;
 import com.tshirt.pds.service.UsersService;
@@ -45,6 +48,8 @@ public class AuthController {
     @Autowired 
     private CustomUserDetailsService  customUserDetailsService;
     
+    @Autowired 
+    private UserRepository  userRepository;
     
     @PostMapping("/adduser")
     public ResponseEntity<Object> adduser(@RequestBody User user) throws Exception {        
@@ -67,26 +72,16 @@ public class AuthController {
     public ResponseEntity<Object> login(@RequestBody LoginRequest loginRequest) throws Exception {        
     	LoginResponse loginResponse = new LoginResponse();
         try {
-        	System.out.println("*******je suis login**********"+loginRequest.getLogin());
-
-        	
-        	UserDetails userDetails = customUserDetailsService.loadUserByUsername(loginRequest.getLogin()) ;
-        	System.out.println("*******je suis userdetailss**********"+userDetails.toString());
-        	
-//        	
-           authenticationManager.authenticate(
-//            		new UsernamePasswordAuthenticationToken(
-//                            userDetails, null, userDetails.getAuthorities()));
-                	
-                   new UsernamePasswordAuthenticationToken(loginRequest.getLogin(), loginRequest.getPassword()));
-            loginResponse.setTokenjwt(jwtUtil.generateToken(loginRequest.getLogin()));
-        Role role=new Role(100000000L,"Administrateur");
-      
-         List<Role> roles = new ArrayList<Role>();
-         roles.add(role);
-         loginResponse.setMesroles(roles);
-
-           loginResponse.setUserDetails(userDetails);
+        	 final Authentication authentication = authenticationManager.authenticate(
+                     new UsernamePasswordAuthenticationToken(
+                    		 loginRequest.getLogin(),
+                    		 loginRequest.getPassword()
+                     )
+             );
+             SecurityContextHolder.getContext().setAuthentication(authentication);
+             final String token = jwtUtil.generateToken(authentication);
+             loginResponse.setTokenjwt(token);
+             return ResponseEntity.ok().body(loginResponse);
         } catch (Exception e) {
             ResponseEntity.badRequest().body(e.getMessage());
             e.printStackTrace();

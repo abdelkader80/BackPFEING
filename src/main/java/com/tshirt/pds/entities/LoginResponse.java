@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 public class LoginResponse {
 	private String tokenjwt;
-	private UserDetails userDetails;
-	List<Role> mesroles;
+	/*private UserDetails userDetails;
+	List<Role> mesroles;*/
 
 }

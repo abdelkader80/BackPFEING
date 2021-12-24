@@ -1,13 +1,22 @@
 package com.tshirt.pds.security;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -15,6 +24,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class JwtUtil {
 
     String key = "W2K4WGQKFVO4nXy2GcCKO/zpPPaU";
+    private String AUTHORITIES_KEY="roles";
+    private int TOKEN_VALIDITY=18000;
 
     public String extractUsername(String token){
         return extractClaim(token, Claims::getSubject);
@@ -46,8 +57,33 @@ public class JwtUtil {
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis())).setExpiration(new Date(System.currentTimeMillis()+1000*60*60*24)).signWith(SignatureAlgorithm.HS256, key).compact();
     }
 
-    public String generateToken(String login) {
-        Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, login);
+    public String generateToken(Authentication authentication) {
+        String authorities = authentication.getAuthorities().stream()
+               .map(GrantedAuthority::getAuthority)
+               .collect(Collectors.joining(","));
+
+       return Jwts.builder()
+               .setSubject(authentication.getName())
+               .claim(AUTHORITIES_KEY, authorities)
+               .setIssuedAt(new Date(System.currentTimeMillis()))
+               .setExpiration(new Date(System.currentTimeMillis() + TOKEN_VALIDITY*1000))
+               .signWith(SignatureAlgorithm.HS256, key)
+               .compact();
+   }
+    
+    UsernamePasswordAuthenticationToken getAuthenticationToken(final String token, final Authentication existingAuth, final UserDetails userDetails) {
+
+        final JwtParser jwtParser = Jwts.parser().setSigningKey(key);
+
+        final Jws<Claims> claimsJws = jwtParser.parseClaimsJws(token);
+
+        final Claims claims = claimsJws.getBody();
+
+        final Collection<? extends GrantedAuthority> authorities =
+                Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
+                        .map(SimpleGrantedAuthority::new)
+                        .collect(Collectors.toList());
+
+        return new UsernamePasswordAuthenticationToken(userDetails, "", authorities);
     }
 }

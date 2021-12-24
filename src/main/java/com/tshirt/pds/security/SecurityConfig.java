@@ -47,15 +47,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) throws Exception {
         web.ignoring().antMatchers("/authenticate");
         web.ignoring().antMatchers("/adduser");
+        web.ignoring().antMatchers("/categories/**");
+        web.ignoring().antMatchers("/app/listcat");
+        web.ignoring().antMatchers("/app/photoProduct/**");
         
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-    	http.formLogin();
+    	//http.formLogin();
         http.csrf().disable().authorizeRequests()
                 .anyRequest().authenticated().and().exceptionHandling().and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        http.cors();
         
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
     }

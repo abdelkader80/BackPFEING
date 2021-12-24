@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -59,7 +60,7 @@ public class catalogueRestController {
 		 Files.write(Paths.get(System.getProperty("user.home")+"/ecommerceapp/produit/"+p.getPhotoNom()), file.getBytes());
 		 produitRepository.save(p);
 	 }
-	 
+	 @PreAuthorize("hasRole('Administrateur')")
 	 @GetMapping("/listproduit")
 	  public List<Produit> getproduit(){
 		  return produitService.getallProduits();
@@ -69,7 +70,7 @@ public class catalogueRestController {
 		 System.out.println("Controleur Activé");
 		  return produitService.getallcat();
 	  }
-	
+	 @PreAuthorize("hasRole('Administrateur')")
 	 @PostMapping("/addproduit")
 		private Produit addproduit(@RequestBody Produit produit) {
 			return produitService.addproduit(produit);
