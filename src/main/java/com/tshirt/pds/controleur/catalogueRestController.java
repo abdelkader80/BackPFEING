@@ -6,6 +6,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
+import javax.annotation.security.RolesAllowed;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.tshirt.pds.entities.Categorie;
 import com.tshirt.pds.entities.Produit;
+import com.tshirt.pds.repository.CategorieRepository;
 import com.tshirt.pds.repository.ProduitRepository;
 import com.tshirt.pds.service.ProduitService;
 
@@ -35,6 +38,9 @@ public class catalogueRestController {
 	
 	@Autowired
 	private ProduitService produitService;
+	
+	@Autowired
+	private CategorieRepository categorieRepository;
 	
 
 	public catalogueRestController(ProduitRepository produitRepository) {
@@ -60,7 +66,8 @@ public class catalogueRestController {
 		 Files.write(Paths.get(System.getProperty("user.home")+"/ecommerceapp/produit/"+p.getPhotoNom()), file.getBytes());
 		 produitRepository.save(p);
 	 }
-	 @PreAuthorize("hasRole('Administrateur')")
+	// @PreAuthorize("hasRole('Administrateur')")
+	 //@RolesAllowed("Administrateur")
 	 @GetMapping("/listproduit")
 	  public List<Produit> getproduit(){
 		  return produitService.getallProduits();
@@ -70,10 +77,20 @@ public class catalogueRestController {
 		 System.out.println("Controleur Activé");
 		  return produitService.getallcat();
 	  }
+	 @GetMapping(path="/listcat/{id}")
+	 public Categorie getcatid(@PathVariable Long id) {
+			return categorieRepository.findById(id).get();
+		}
 	 @PreAuthorize("hasRole('Administrateur')")
 	 @PostMapping("/addproduit")
 		private Produit addproduit(@RequestBody Produit produit) {
 			return produitService.addproduit(produit);
+			
+	  }
+	 
+	 @PostMapping("/addcat")
+		private Categorie addcat(@RequestBody Categorie categorie) {
+			return produitService.addcat(categorie);
 			
 	  }
 	 @DeleteMapping("/listproduit/{id}")

@@ -28,6 +28,7 @@ public class ProduitServiceImpl implements ProduitService{
 		
 		return categorieRepository.findAll();
 	}
+	
 
 	@Override
 	public Produit addproduit(Produit produit) {
@@ -48,6 +49,18 @@ public class ProduitServiceImpl implements ProduitService{
 		produitRepository.deleteById(id);
 		
 	}
+	@Override
+	public Categorie addcat(Categorie categorie) {
+		// TODO Auto-generated method stub
+		return categorieRepository.save(categorie);
+	}
+	@Override
+	public Categorie getcatid(Long id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	
 
 
 }

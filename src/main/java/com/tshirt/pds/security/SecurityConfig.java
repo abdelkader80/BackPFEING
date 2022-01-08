@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -48,8 +49,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         web.ignoring().antMatchers("/authenticate");
         web.ignoring().antMatchers("/adduser");
         web.ignoring().antMatchers("/categories/**");
-        web.ignoring().antMatchers("/app/listcat");
+        web.ignoring().antMatchers("/produits/**");
+        web.ignoring().antMatchers("/app/listcat/**");
         web.ignoring().antMatchers("/app/photoProduct/**");
+
+        web.ignoring().antMatchers("/app/addcat/**");
         
     }
 
@@ -57,8 +61,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
     	//http.formLogin();
         http.csrf().disable().authorizeRequests()
-                .anyRequest().authenticated().and().exceptionHandling().and().sessionManagement()
+                .and().exceptionHandling().and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        http.authorizeRequests().antMatchers("/app/listproduit/**").hasAuthority("Administrateur");
+        http.authorizeRequests().antMatchers("/app/addproduit/").hasAuthority("Administrateur");
+        http.authorizeRequests().antMatchers("/app/uploadphoto/**").hasAuthority("Administrateur");
+        http.authorizeRequests().anyRequest().authenticated();
         http.cors();
         
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
