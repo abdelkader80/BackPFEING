@@ -54,6 +54,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         web.ignoring().antMatchers("/app/photoProduct/**");
 
         web.ignoring().antMatchers("/app/addcat/**");
+        web.ignoring().antMatchers("/app/addproduit/**");
         
     }
 
@@ -65,7 +66,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.authorizeRequests().antMatchers("/app/listproduit/**").hasAuthority("Administrateur");
         http.authorizeRequests().antMatchers("/app/addproduit/").hasAuthority("Administrateur");
-        http.authorizeRequests().antMatchers("/app/uploadphoto/**").hasAuthority("Administrateur");
+       // http.authorizeRequests().antMatchers("/app/uploadphoto/**").hasAuthority("Administrateur");
         http.authorizeRequests().anyRequest().authenticated();
         http.cors();
         
