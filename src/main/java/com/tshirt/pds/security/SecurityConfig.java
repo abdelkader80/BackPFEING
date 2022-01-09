@@ -67,7 +67,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and().exceptionHandling().and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.authorizeRequests().antMatchers("/app/listproduit/**").hasAuthority("Administrateur");
-        http.authorizeRequests().antMatchers("/app/addproduit/").hasAuthority("Administrateur");
+       // http.authorizeRequests().antMatchers("/app/addproduit/").hasAuthority("Administrateur");
        // http.authorizeRequests().antMatchers("/app/uploadphoto/**").hasAuthority("Administrateur");
         http.authorizeRequests().anyRequest().authenticated();
         http.cors();
