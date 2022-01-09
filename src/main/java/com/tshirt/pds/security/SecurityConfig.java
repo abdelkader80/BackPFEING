@@ -56,6 +56,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         web.ignoring().antMatchers("/app/addcat/**");
         web.ignoring().antMatchers("/app/addproduit/**");
         web.ignoring().antMatchers("/app/photoProduct/**");
+        web.ignoring().antMatchers("/app/uploadphoto/**");
         
     }
 
