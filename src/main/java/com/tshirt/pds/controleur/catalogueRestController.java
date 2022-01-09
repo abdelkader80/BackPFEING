@@ -81,7 +81,7 @@ public class catalogueRestController {
 	 public Categorie getcatid(@PathVariable Long id) {
 			return categorieRepository.findById(id).get();
 		}
-	 @PreAuthorize("hasRole('Administrateur')")
+	 //@PreAuthorize("hasRole('Administrateur')")
 	 @PostMapping("/addproduit")
 		private Produit addproduit(@RequestBody Produit produit) {
 			return produitService.addproduit(produit);
